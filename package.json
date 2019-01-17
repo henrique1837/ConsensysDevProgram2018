@@ -1,0 +1,25 @@
+{
+  "name": "pet-shop",
+  "version": "1.0.0",
+  "description": "",
+  "main": "truffle.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "dev": "lite-server",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "buffer": "^5.2.1",
+    "ipfs-api": "^26.1.2",
+    "lite-server": "^2.3.0",
+    "safe-buffer": "^5.1.2"
+  },
+  "dependencies": {
+    "multihashes": "^0.4.14",
+    "truffle-hdwallet-provider": "^1.0.2"
+  }
+}
