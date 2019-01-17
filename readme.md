@@ -1,5 +1,5 @@
 
-## Descentralized FileStore
+## Decentralized FileStore
 
 The aim of this project is to create a decentralized application that allows users to store files in <a href="https://ipfs.io/" target="_blank">IPFS</a> and refer the hash of that file to its own ethereum wallet. The Dapp will use IPFS to store files and Smart Contracts in Ethereum to refer ipfs hashes to a wallet that has submitted that hash.
 
