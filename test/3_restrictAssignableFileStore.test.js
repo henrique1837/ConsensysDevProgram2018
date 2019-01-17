@@ -87,7 +87,7 @@ contract('RestrictAssignableFileStore', function(accounts) {
     }
     assert.equal( "undefined",typeof(transaction), 'Admin should not be able to verify own file');
     // getFileSignatures method should not return any wallet
-    const fileSignatures = await fs.getFileSignatures(ipfsHash1);
+    const fileSignatures = await fs.getFileSignatures(ipfsHash2);
     assert.equal(fileSignatures.length,0,'fileSignatures length should be 0');
   });
   it("Can check if file is verified",async()=>{

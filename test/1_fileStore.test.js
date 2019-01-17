@@ -54,14 +54,14 @@ contract('FileStore', function(accounts) {
     } catch(err){
       
     }
-    assert.equal( undefined,typeof(transaction), 'Other user should be able to add other file');
+    assert.equal( "object",typeof(transaction), 'Other user should be able to add other file');
     try{
       var transaction = await filestore.addFile(ipfsHash3,filename,{from:pedro});
      
     } catch(err){
       
     }
-    assert.equal( undefined,typeof(transaction), 'User should be able to add other file');
+    assert.equal( "object",typeof(transaction), 'User should be able to add other file');
   });
   it("Getter functions are ok",async()=>{
     const filestore = await FileStore.deployed();
