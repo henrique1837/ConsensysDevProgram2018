@@ -95,8 +95,9 @@ App = {
 		          "</div>",
   init: async function() {
     
-    $("#root").html("");
-
+    App.root.html("");
+    App.appInfo.html("");
+    App.userInfo.html("");
     return(await App.initWeb3());
   },
 
@@ -110,7 +111,7 @@ App = {
       } catch (error) {
         // User denied account access...
         console.error("User denied account access");
-	$("#root").html("<p>In order to use the dApp you need to confirm account access</p>");
+	App.root.html("<p>In order to use the dApp you need to confirm account access</p>");
       }
     }
     // Legacy dapp browsers...
@@ -452,5 +453,11 @@ App = {
 $(function() {
   $(window).load(function() {
     App.init();
+    window.ethereum.on('accountsChanged', function () {
+	  App.init();
+    });
+    window.ethereum.on('networkChanged', function () {
+        App.init();
+    });
   });
 });
