@@ -1,13 +1,12 @@
-/** Only needed if migrating to ropsten 
-var HDWalletProvider = require("truffle-hdwallet-provider");
-var mnemonic = "mnemonic or private key";
-**/
+//Only needed if migrating to ropsten 
+//var HDWalletProvider = require("truffle-hdwallet-provider");
+//var mnemonic = "mnemonic or private key";
 module.exports = {
   // See <http://truffleframework.com/docs/advanced/configuration>
   // for more about customizing your Truffle configuration!
   compilers: {
     solc: {
-      version: "^0.4.25"
+      version: "^0.4.24"
     }
   },
   networks: {
@@ -18,10 +17,10 @@ module.exports = {
     }/*,
     ropsten: {
       provider: function() {
-        return new HDWalletProvider(mnemonic, "https://ropsten.infura.io/<INFRURA-API>")
+        return new HDWalletProvider(mnemonic, "https://ropsten.infura.io/<<INFRURA-API>>")
       },
       network_id: 3,
       gasPrice: 1000000000
-    }*/   
+    }*/
   }
 };

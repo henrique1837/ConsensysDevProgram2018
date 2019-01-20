@@ -5,8 +5,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <title>Descentralized File Store</title>
-
+    <title>Decentralized File Store</title>
+    
     <!-- Bootstrap -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
 
@@ -16,6 +16,9 @@
       <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+
+
   </head>
   <body>
     <div class="container-fluid" id="menu">
@@ -24,26 +27,30 @@
     <div class="container">
         <div class="row">
           <div class="col-xs-12 col-sm-8 col-sm-push-2">
-            <h1 id="page_text" class="text-center">Descentralized File Store</h1>
+            <h1 id="page_text" class="text-center">Decentralized File Store</h1>
             <hr/>
             <br/>
           </div>
         </div>
       </div>
-      <div id="appInfo" class="container">
-        <!-- app info load here -->
-	<p>Please unblock your metamask account and connect it to this app to use it.</p>
-	<p>If you are running on localhost and running ganache-cli remember that you need to migrate contracts first.</p>
-	<p>If App does not load and you are not running on localhost please connect your metamask to ropsten network and reload page.</p>
-      </div>
+    
       <div id="userInfo" class="container">
         <!-- user info load here -->
       </div>
+      <hr>
       <div id="transactionInfo" class="container">
         <!-- transaction hash or erros load here -->
       </div>
+ 
       <div id="root" class="container">
         <!-- app load here -->
+       
+       <div class="alert alert-info" role="alert">
+	<p>Please unblock your metamask account and connect it to this app to use it.</p>
+	<p>If you are running on localhost and running ganache-cli remember that you need to migrate contracts first.</p>
+	<p>If App does not load and you are not running on localhost please connect your metamask to ropsten network and reload page.</p>
+       </div>
+       <center><i class="fas fa-sync fa-spin fa-10x"></i></center>
       </div>
 
 
@@ -55,6 +62,6 @@
     <script src="js/bootstrap.min.js"></script>
     <script src="js/web3.min.js"></script>
     <script src="js/truffle-contract.js"></script>
-    <script src="js/bundle.js"></script>
+    <script src="js/app.js"></script>
   </body>
 </html>

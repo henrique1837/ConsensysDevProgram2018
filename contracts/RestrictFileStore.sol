@@ -1,8 +1,9 @@
-pragma solidity ^0.4.17;
+pragma solidity ^0.4.24;
 
 import "./FileStore.sol";
-import "./Destructible.sol";
-import "./Pausable.sol";
+import "installed_contracts/zeppelin/contracts/ownership/Ownable.sol";
+import "installed_contracts/zeppelin/contracts/lifecycle/Destructible.sol";
+import "installed_contracts/zeppelin/contracts/lifecycle/Pausable.sol";
 
 
 /** @title RestrictFileStore.

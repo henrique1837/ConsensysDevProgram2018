@@ -1,6 +1,6 @@
-pragma solidity ^0.4.17;
+pragma solidity ^0.4.24;
 
-import "./SafeMath.sol";
+import "installed_contracts/zeppelin/contracts/math/SafeMath.sol";
 import "./FileStoreLib.sol";
 
 /** @title FileStore.

@@ -1,4 +1,4 @@
-const Buffer = require('safe-buffer').Buffer;
+
 App = {
   web3Provider: null,
   contracts: {},
@@ -6,12 +6,36 @@ App = {
   menu: $("#menu"),
   userInfo: $("#userInfo"),
   pageText: $("#page_text"),
-  appInfo: $("#appInfo"),
   transactionInfo: $("#transactionInfo"),
   ipfs: window.IpfsApi({ host: 'ipfs.infura.io', port: 5001, protocol: 'https' }),
-  buffer: Buffer,
   
-  sectionContractUse: "<div class='row'>"+
+sectionContractUse: "<div class='row'>"+
+                            "<h3>Aplication</h3>"+
+		            "<div>"+
+				    "<h4>Upload File to IPFS</h4>"+
+	  			    "<p>Use this section to upload a file to IPFS</p>"+
+				"<div class='div_input'>"+
+					    "<label class='label label-default' for='input_file'>File</label>"+
+					    "<input id='input_file' type='file'>"+
+				    "<div><button id='uploadDoc' class='btn'>Upload to IPFS</button></div>"+
+				 "</div>"+
+				 "<h4>Add IPFS hash in the FileStore Contract</h4>"+
+	  			 "<p>Use this section to refer ipfs hash of a file to your Ethereum wallet</p>"+
+				 "<div class='div_input'>"+
+					    "<label class='label label-default' for='input_name'>File Name</label>"+
+					    "<input id='input_name' type='text'>"+
+		  			    
+				 "</div>"+
+				"<div class='div_input'>"+
+					"<label class='label label-default' for='input_hash'>IPFS hash</label>"+
+                  	   	    	"<input id='input_hash' type='text'>"+
+				    "</div>"+
+				"<div><button id='addIPFShash' class='btn'>Add IPFS hash to contract</button></div>"+
+			     "</div>"+
+			    
+				    
+		           "</div>"+
+			"<div class='row'>"+
 		       "<ul class='nav nav-tabs'>"+
 			  "<li class='active'><a data-toggle='tab' href='#div_userFiles'>Your Files</a></li>"+
 			  "<li><a data-toggle='tab' href='#div_contractFiles'>Contract Files</a></li>"+
@@ -20,37 +44,8 @@ App = {
 
 		       "<div class='tab-content'>"+
  			"<div id='div_userFiles' class='tab-pane fade in active'>"+
-			 "<div class='row'>"+
-                            "<h3>Aplication</h3>"+
-		            "<div class='col-sm-6'>"+
-				    "<h4>Upload and refer</h4>"+
-	  			    "<p>Use this section to upload an file to IPFS and refer the hash to your own wallet</p>"+
-				"<div class='div_input'>"+
-					    "<label class='label label-default' for='input_file'>File</label>"+
-					    "<input id='input_file' type='file'>"+
-				    "<label class='label label-default' for='input_name'>File Name</label>"+
-				 "</div>"+
-				 "<div class='div_input'>"+
-					    "<input id='input_name' type='text'>"+
-		  			    "<div><button id='uploadDoc' class='btn'>Upload</button></div>"+
-				 "</div>"+
-			     "</div>"+
-			     "<div class='col-sm-6'>"+
-				    "<h4>Refer IPFS hash</h4>"+
-	  			    "<p>Use this section to refer an IPFS hash to your wallet</p>"+
-				    "<div class='div_input'>"+
-					"<label class='label label-default' for='input_hash'>IPFS hash</label>"+
-                  	   	    	"<input id='input_hash' type='text'>"+
-				    "</div>"+
-				    "<div class='div_input'>"+
-		          	            "<label class='label label-default' for='input_contentName'>Content Name</label>"+
-		          		    "<input id='input_contentName' type='text'>"+
-				    "</div>"+
-			     "</div>"+
-				    "<div><button id='addIPFShash' class='btn'>Add ipfs hash</button></div>"+
-		           "</div>"+
-		           "<div class='row' id='user_events'>"+
-		           "</div>"+
+			 
+		           
 			   "<div class='row' id='userFiles'>"+
 			      "<h4>Your Files</h4>"+
 			      "<div class='table-responsive'>"+
@@ -94,10 +89,6 @@ App = {
 		           "</div>"+
 		          "</div>",
   init: async function() {
-    
-    App.root.html("");
-    App.appInfo.html("");
-    App.userInfo.html("");
     return(await App.initWeb3());
   },
 
@@ -138,81 +129,161 @@ App = {
     App.contracts.FileStore.setProvider(App.web3Provider);
     App.contracts.RestrictFileStore.setProvider(App.web3Provider);
     App.transactionInfo.html("");
+    App.root.html('<center><i class="fas fa-sync fa-spin fa-10x"></i></center>');
+    App.userInfo.html("");
     App.renderMenu();
-    App.renderAppInfo();
     return(App.renderHome());
   },
 
-  handleUpload: async function(fsContract){
-
+  handleUpload: async function(){
+      $('#input_hash').val("");	
       var ipfs = App.ipfs;
+      // Get file to be uploaded //
       const file = $('#input_file').prop('files')[0];
+      // Verify if there is a file //
+      if(typeof(file) == "undefined"){
+	return(App.transactionInfo.html("<div class='alert alert-danger alert-dismissible' role='alert'>"+
+		  	                "<button type='button' class='close' data-dismiss='alert' aria-label='Close'>"+
+					    "<span aria-hidden='true'>&times;</span>"+
+					  "</button>"+
+					"<p>No file selected to upload to IPFS</p>"+
+				    "</div>"));
+      }
       const fileName = $('#input_name').val();
+      // Prepare to read file //
       const reader = new FileReader();
+      App.transactionInfo.html('<center><i class="fas fa-sync fa-spin fa-5x"></i></center>');
       reader.onload =  function(e) {
-        var buffer = App.buffer.from(reader.result);
+	// Reading file function //
+        var buffer = App.ipfs.types.Buffer(reader.result);
         console.log(buffer);
+	// Adding file in ipfs //
         ipfs.files.add(buffer,function(err,res){
           if (err || !res) {
+	    // In case of error display error //
+            App.transactionInfo.html("<div class='alert alert-danger alert-dismissible' role='alert'>"+
+					"Error while uploading to IPFS: "+err+
+		  	                "<button type='button' class='close' data-dismiss='alert' aria-label='Close'>"+
+					    "<span aria-hidden='true'>&times;</span>"+
+					  "</button>"+
+				    "</div>");
             return(console.error('ipfs add error', err));
           }
           console.log(res);
           res.forEach(function (file) {
+	    // Show file hash and prepare to insert hash in the contract //
             if (file && file.hash) {
               console.log('successfully stored', file.hash)
-              App.addIPFSHash(fsContract,file.hash,fileName);
+              App.transactionInfo.html('<div class="alert alert-success alert-dismissible" role="alert">'+
+					  "<button type='button' class='close' data-dismiss='alert' aria-label='Close'>"+
+					    "<span aria-hidden='true'>&times;</span>"+
+					  "</button>"+
+				           '<p>File hash: '+file.hash+'</p>'+
+					    
+				          '</div>');
+	      $('.alert').alert();
+              $("#input_hash").val(file.hash);
             }
           });
         });
 
 			}
-
-			reader.readAsDataURL(file);
-
-
+			//Reading file //
+			reader.readAsArrayBuffer(file);
+			
+			
   },
   renderDownloadButton: async function(){
+    // Render preview of file in IPFS //
     $("#file_content").html("IPFS: getting file ...")
     const ipfs = App.ipfs;
     const ipfsHash = $(this).html();
     console.log(ipfsHash);
     // const stream = ipfs.catReadableStream(ipfsHash);
     // console.log(stream)
-    ipfs.cat(ipfsHash, function (err, file) {
-      if (err) {
-        throw err
-      }
-
-      console.log(file.toString('utf8'));
-      $("#file_content").html("<p>File Hash: <a href='https://ipfs.io/ipfs/"+ipfsHash+"' target='_blank'>"+ipfsHash+"</a></p>"+
-                              "<p><a href='"+file.toString('utf-8')+"' target='_blank'>Download File</a></p>"+
-                              "<h4>File Preview</h4>"+
-                              "<embed src='"+file.toString('utf-8')+"' width='500' height='375'>");
-    })
+    $("#file_content").html("<p>File Hash: <a href='https://ipfs.io/ipfs/"+ipfsHash+"' target='_blank'>"+ipfsHash+"</a></p>"+
+                            "<h4>File Preview</h4>"+
+                            "<embed src='https://ipfs.io/ipfs/"+ipfsHash+"' width='500' height='375'>");
   },
   addIPFSHash: async function(fsContract,ipfsHash,fileName){
+    
     var web3 = new Web3(App.web3Provider);
     const filestoreInstance = await fsContract.deployed();
+    App.transactionInfo.html('<center><i class="fas fa-sync fa-spin fa-5x"></i></center>'); 
+    // Verify if hash to be inserted in contract is IPFS hash //
     var isIPFSHash = await App.verifyIPFSHash(ipfsHash);
-    if(isIPFSHash){
-          const transaction = await filestoreInstance.addFile(ipfsHash,fileName,{from: web3.eth.coinbase});
-          console.log("Transaction: "+transaction.tx);
-          App.transactionInfo.html('<div class="alert alert-success" role="alert">'+
-				    '<p>Transaction hash: '+transaction.tx+'</p>'+
-				  '</div>');
-          setTimeout(function(){ 
-		App.transactionInfo.html("");
-	  }, 5000);
-    } else {
-          App.transactionInfo.html('<div class="alert alert-danger" role="alert">'+
-				    '<p>An error has ocurred</p>'+
-				  '</div>');
-          setTimeout(function(){ 
-		App.transactionInfo.html("");
-	  }, 5000);
+    if(!isIPFSHash){
+	// Display message that hash is not ipfs hash //
+	return(App.transactionInfo.html("<div class='alert alert-danger alert-dismissible' role='alert'>"+
+		  	                "<button type='button' class='close' data-dismiss='alert' aria-label='Close'>"+
+					    "<span aria-hidden='true'>&times;</span>"+
+					  "</button>"+
+					 "<p>Error when checking IPFS hash</p>"+
+				    "</div>"));
     }
-    await App.getAllContractFiles(fsContract);
-    return(App.getUserFiles(fsContract));
+    // Ask to confirm transaction //
+    App.transactionInfo.html("<div class='alert alert-info alert-dismissible' role='alert'>"+
+					"<button type='button' class='close' data-dismiss='alert' aria-label='Close'>"+
+					 "<span aria-hidden='true'>&times;</span>"+
+
+					  "</button>"+
+					"<p>File hash: "+ipfsHash+"</p>"+
+					'<p>Confirm transaction <i class="fas fa-sync fa-spin fa-2x"></i> </p>'+
+		  	                
+				    "</div>");
+      // If transaction is refused code bellow will fail and an message will be showed //
+      try{
+	   const transaction = await filestoreInstance.addFile(ipfsHash,fileName,{from: web3.eth.coinbase});
+          console.log("Transaction: "+transaction.tx);
+          // Show message that transaction has been submited and waiting for 1 confirmation //
+          App.transactionInfo.html("<div class='alert alert-info alert-dismissible' role='alert'>"+
+					"<button type='button' class='close' data-dismiss='alert' aria-label='Close'>"+
+					 "<span aria-hidden='true'>&times;</span>"+
+
+					  "</button>"+
+					'<p>File hash: '+ipfsHash+"</p>"+
+				        "<p>Transaction hash: "+transaction.tx+" waiting 1 confirmation <i class='fas fa-sync fa-spin fa-2x'></i> </p></p>"+
+		  	                
+				    "</div>");
+	   // Clear inputs //
+           $('#input_file').val("");
+           $('#input_name').val("");
+	   $('#input_hash').val("");
+           // Verify if transaction has been confirmed //
+           interval = setInterval(function(){
+	       web3.eth.getTransactionReceipt(transaction.tx, function(err,res){
+		if(res.blockNumber != null){
+		   // Show that transaction has been confirmed //
+          	   App.transactionInfo.html("<div class='alert alert-success alert-dismissible' role='alert'>"+
+					"<button type='button' class='close' data-dismiss='alert' aria-label='Close'>"+
+					 "<span aria-hidden='true'>&times;</span>"+
+
+					  "</button>"+
+					'<p>File hash: '+ipfsHash+"</p>"+
+				        "<p>Transaction hash: "+transaction.tx+" confirmed </p></p>"+
+		  	                
+				    "</div>");
+		   // Show contract events and stop interval //
+	           App.getUserFiles(fsContract)
+                   App.getAllContractFiles(fsContract);		
+		   clearInterval(interval); 
+		}
+	       });
+	   },3000);
+           
+	  }catch(err){
+		// Transaction refused //
+		App.transactionInfo.html("<div class='alert alert-danger alert-dismissible' role='alert'>"+
+						"<button type='button' class='close' data-dismiss='alert' aria-label='Close'>"+
+						 "<span aria-hidden='true'>&times;</span>"+
+
+						  "</button>"+
+						"<p>Transaction refused</p>"+
+			  	                
+					    "</div>");
+	  }
+
+    $('.alert').alert();
   },
   
   // Verify if IPFS hash exists in IPFS network //
@@ -222,8 +293,10 @@ App = {
 	  var file = await ipfs.cat(ipfsHash);
 	  var isIPFSHash = true;
         }catch(err){
-	  console.log(err);
-	  var isIPFSHash = false;
+          console.log(err);
+          var isIPFSHash = false;
+	  
+	  
         }	
 	
         return(isIPFSHash);
@@ -233,11 +306,11 @@ App = {
     var web3 = new Web3(App.web3Provider);
     const filestoreInstance = await fsContract.deployed();
 
-
+   // Check FileUploaded event //
    var event = filestoreInstance.FileUploaded({},
                                               { fromBlock: 0, toBlock: 'latest' });
    $("#file_content").html("");
-   $("#t_Cevents").html("");
+   $("#t_Cevents").html('<center><i class="fas fa-sync fa-spin fa-5x"></i></center>');
    await App.renderInfo(fsContract);
    await event.get((err, res) => {
       if (err){
@@ -245,22 +318,23 @@ App = {
         throw(err);
       } else {
         try{
-          $("#t_Cevents").html("");
+          $("#t_Cevents").html('');
           for(i=0;i<res.length;i++){
             var ipfsHash = res[i].args.ipfshash;
             var fileId = res[i].args.fileId;
             var fileName = res[i].args.name;
             var owner = res[i].args.owner;
             $("#t_Cevents").append(  "<tr>"+
-					"<td>"+owner+"</td> "+
-                                        "<td>"+fileId+"</td> "+
-                                        "<td>"+fileName+"</td>"+
-                                        "<td><a href='https://ipfs.io/ipfs/"+ipfsHash+"' value='"+fileId+"' class='a_ipfs' target='_blank' >"+ipfsHash+"</a></td> "+
-                                      "</tr>");
+						"<td>"+owner+"</td> "+
+		                                "<td>"+fileId+"</td> "+
+		                                "<td>"+fileName+"</td>"+
+		                                "<td><a href='https://ipfs.io/ipfs/"+ipfsHash+"' value='"+fileId+"'  target='_blank' >"+ipfsHash+"</a></td> "+
+		                              "</tr>");
 
           }
           //$(".a_ipfs").click(App.renderDownloadButton);
         } catch(error){
+          $("#t_Cevents").html('');
           console.log(error);
         }
 
@@ -275,11 +349,11 @@ App = {
     var web3 = new Web3(App.web3Provider);
     const filestoreInstance = await fsContract.deployed();
 
-
+   // Check FileUploaded event //
    var event = filestoreInstance.FileUploaded({owner: web3.eth.coinbase},
                                               { fromBlock: 0, toBlock: 'latest' });
    $("#file_content").html("");
-   $("#t_events").html("");
+   $("#t_events").html('<center><i class="fas fa-sync fa-spin fa-5x"></i></center>');
    await App.renderInfo(fsContract);
    await event.get((err, res) => {
       if (err){
@@ -288,7 +362,7 @@ App = {
       } else {
         try{
           console.log('FileUploaded: ' + JSON.stringify(res[0].args));
-          $("#t_events").html("");
+          $("#t_events").html('');
           for(i=0;i<res.length;i++){
             var ipfsHash = res[i].args.ipfshash;
             var fileId = res[i].args.fileId;
@@ -302,6 +376,7 @@ App = {
           }
           $(".a_ipfs").click(App.renderDownloadButton);
         } catch(error){
+          $("#t_events").html('');
           console.log(error);
         }
 
@@ -360,22 +435,6 @@ App = {
     $("#a_rfs").click(App.renderRestrictFileStore);
   },
  
-  // Render App information and usage //
-
-  renderAppInfo: function(){
-     App.appInfo.html("<div class='alert alert-info alert-dismissible' role='alert'>"+
-			"If App does not load please connect your metamask to ropsten network and reload the page"+
-  	                "<button type='button' class='close' data-dismiss='alert' aria-label='Close'>"+
-			    "<span aria-hidden='true'>&times;</span>"+
-			  "</button>"+
-			"</div>"+
-		     "<div class='row'>"+
-			"<h3>Informations</h3>"+
-			"<p>Use 'Upload and refer' column to upload an file to IPFS and refer the hash to your own wallet</p>"+
-			"<p>Use 'Refer IPFS hash' to refer the hash of some file added by yourself in IPFS to your own wallet</p>"+
-		      "</div>");
-  $('.alert').alert()
-  },
 
   // Render user info and contract info for aplication //
   renderInfo: async function(fsContract){
@@ -412,18 +471,23 @@ App = {
   // Render home of aplication//
 
   renderHome: async function(){
-    App.pageText.html("Descentralized File Store");
+    App.pageText.html("Decentralized File Store");
 
 
     await App.renderInfo(App.contracts.FileStore);
     App.root.html(App.sectionContractUse);
+    $("#input_file").on("change",function(){
+	const file = $('#input_file').prop('files')[0];
+	$("#input_name").val(file.name);
+        App.transactionInfo.html("");
+    });
     $("#uploadDoc").click(function(){
-	App.handleUpload(App.contracts.FileStore);
+	App.handleUpload();
     });
     $("#addIPFShash").click(function(){
 	App.addIPFSHash(App.contracts.FileStore,
 		        $("#input_hash").val(),
- 			$("#input_contentName").val());
+ 			$("#input_name").val());
     });
     await App.getAllContractFiles(App.contracts.FileStore);
     return(App.getUserFiles(App.contracts.FileStore));
@@ -437,13 +501,18 @@ App = {
       var web3 = new Web3(App.web3Provider);
       await App.renderInfo(App.contracts.RestrictFileStore);
       App.root.html(App.sectionContractUse);
+      $("#input_file").on("change",function(){
+	const file = $('#input_file').prop('files')[0];
+	$("#input_name").val(file.name);
+        App.transactionInfo.html("");
+      });
       $("#uploadDoc").click(function(){
-	App.handleUpload(App.contracts.RestrictFileStore);
+	App.handleUpload();
       });
       $("#addIPFShash").click(function(){
 	App.addIPFSHash(App.contracts.RestrictFileStore,
 		        $("#input_hash").val(),
- 			$("#input_contentName").val());
+ 			$("#input_name").val());
       });
       await App.getAllContractFiles(App.contracts.RestrictFileStore);
       return(App.getUserFiles(App.contracts.RestrictFileStore));
