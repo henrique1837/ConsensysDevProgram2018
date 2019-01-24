@@ -211,7 +211,7 @@ sectionContractUse: "<div class='row'>"+
     const filestoreInstance = await fsContract.deployed();
     App.transactionInfo.html('<center><i class="fas fa-sync fa-spin fa-5x"></i></center>'); 
     // Verify if hash to be inserted in contract is IPFS hash //
-    var isIPFSHash = await App.verifyIPFSHash(ipfsHash);
+    var isIPFSHash = App.verifyIPFSHash(ipfsHash);
     if(!isIPFSHash){
 	// Display message that hash is not ipfs hash //
 	return(App.transactionInfo.html("<div class='alert alert-danger alert-dismissible' role='alert'>"+
@@ -286,19 +286,15 @@ sectionContractUse: "<div class='row'>"+
     $('.alert').alert();
   },
   
-  // Verify if IPFS hash exists in IPFS network //
-  verifyIPFSHash: async function(ipfsHash){
-	const ipfs = App.ipfs;
-	try{
-	  var file = await ipfs.cat(ipfsHash);
-	  var isIPFSHash = true;
-        }catch(err){
-          console.log(err);
-          var isIPFSHash = false;
-	  
-	  
-        }	
+  // Verify if IPFS hash is ok //
+  verifyIPFSHash:  function(ipfsHash){
 	
+	// For directory the ipfs.cat does not work //
+	if((ipfsHash[0]+ipfsHash[1]) == "Qm" && ipfsHash.length == 46 ) {
+              var isIPFSHash = true;  
+        } else {
+              var isIPFSHash = false;
+	}	
         return(isIPFSHash);
   },
 
@@ -521,7 +517,9 @@ sectionContractUse: "<div class='row'>"+
 
 $(function() {
   $(window).load(function() {
-    App.init();
+    $("#b_load").click(function(){
+	App.init();
+    });
     window.ethereum.on('accountsChanged', function () {
 	  App.init();
     });
