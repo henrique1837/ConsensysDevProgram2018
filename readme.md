@@ -50,13 +50,13 @@ $ sudo apt install nodejs npm
 * Ganache-cli
 
 ```
-$ sudo npm install -g ganache-cli
+$ npm install -g ganache-cli
 ```
 
-* Truffle
+* Truffle version 4.1.14
 
 ```
-$ sudo npm install -g truffle
+$ npm install -g truffle@4.1.14
 ```
 
 * Metamask browser extension
@@ -79,9 +79,9 @@ Install git if not installed and clone this repository
 ```
 # if git is not installed run first
 # $ sudo apt-get install git-core
-$ git clone https://github.com/henrique1837/ConsensysDevProgram2018
+$ git clone https://github.com/dev-bootcamp-2019/final-project-henrique1837
 # Move to the directory and open another terminal after
-$ cd ConsensysDevProgram2018
+$ cd final-project-henrique1837
 ```
 
 Start a ganache private blockchain in another terminal
